@@ -84,10 +84,12 @@ function make_y_axis() {
       .orient("left");
 }
 
+/*
 var focus = svg.append("g")
     .style("display", "none");
 
 var bisectDate = d3.bisector(function(d) { return d.month; }).left;
+*/
 
 d3.csv("/data/"+year+".csv", function(error, data) {
   if (error) throw error;
@@ -139,7 +141,7 @@ d3.csv("/data/"+year+".csv", function(error, data) {
       .attr("transform", "translate(" + width + ",0)")
       .call(yAxis);
 
-
+/*
   focus.append("circle")
       .attr("class", "y")
       .style("fill", "none")
@@ -171,7 +173,7 @@ d3.csv("/data/"+year+".csv", function(error, data) {
         console.log(d.value)
 
   }
-
+*/
 
     var legend = svg.selectAll(".legend")
       .data(z.domain().slice().reverse())
