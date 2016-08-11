@@ -110,7 +110,7 @@ d3.csv("/data/"+year+".csv", function(error, data) {
             .tickSize(-width, 0, 0)
             .tickFormat("")
         )
-
+/*
   svg.selectAll(".layer")
       .data(layers)
       .enter().append("path")
@@ -120,6 +120,22 @@ d3.csv("/data/"+year+".csv", function(error, data) {
       .style("stroke-opacity", 0.7)
       .style("stroke", function(d, i) { return z(i); })
       .style("fill", function(d, i) { return z(i); });
+*/
+
+  var layer = svg.selectAll(".layer")
+    .data(layers)
+    .enter().append("g")
+      .attr("class", "layer");
+
+  layer.append("path")
+      .attr("class", "area")
+      .style("fill", function(d,i) { return z(i); })
+      .attr("d", function(d) { return area(d.values); })
+      .style("fill-opacity", 0.5)
+      .style("stroke-opacity", 0.7)
+      .style("stroke", function(d, i) { return z(i); })
+      .style("fill", function(d, i) { return z(i); });
+
 
   svg.append("g")
       .attr("class", "x axis")
