@@ -51,23 +51,20 @@ var svg = d3.select("body").append("svg")
 var legendClassArray = [];
 
 var year = 102;
-var ty=0;
 var yMaxValue=5784850;  //use python to generate this value
 
 var btn = d3.select('#next')
                   .on('click',function(){
                     if(year < 105)
                       year=year+1;
-                      ty=1;
-                    updateData(year,ty);
+                    updateData(year);
                   });
 
 var btn = d3.select('#last')
                   .on('click',function(){
                     if(year > 97)
                       year=year-1;
-                      ty=0;   //backward
-                    updateData(year,ty);
+                    updateData(year);
                   });
 
 // function for the x grid lines
@@ -83,13 +80,6 @@ function make_y_axis() {
       .scale(y)
       .orient("left");
 }
-
-/*
-var focus = svg.append("g")
-    .style("display", "none");
-
-var bisectDate = d3.bisector(function(d) { return d.month; }).left;
-*/
 
 d3.csv("/data/"+year+".csv", function(error, data) {
   if (error) throw error;
@@ -141,39 +131,105 @@ d3.csv("/data/"+year+".csv", function(error, data) {
       .attr("transform", "translate(" + width + ",0)")
       .call(yAxis);
 
-/*
-  focus.append("circle")
-      .attr("class", "y")
-      .style("fill", "none")
-      .style("stroke", "blue")
-      .attr("r", 4);
+    //vetical line through focus point
+  var focusLine =  svg.append("g")
+      .attr("class", "fl")
+  focusLine.append("line")
+      .style("stroke", "black")
+      .attr("x1", 0)
+      .attr("y1", 0)
+      .attr("x2", 0)
+      .attr("y2", height);
 
+    //focus point
+  var focus = svg.append("g")
+      .attr("class", "cirs")
+      .style("display", "none");
+
+    //five circles
+  for(i=0;i<5;i++)
+  {
+     focus.append("circle")
+      .attr("class", "y"+i)
+      .style("fill","none")
+      .style("stroke", z(3))
+      .attr("r", 4);
+  }
+
+    //the data block
+  var tooltip = svg.append("g")
+                   .attr("class", "tooltip")
+                   .style("display", "none");
+
+  tooltip.append("rect")
+        .attr("class", "toolrect")
+        .attr("width", 124)
+        .attr("height",144)
+        .attr("fill", "white")
+        .attr("rx",10)
+        .attr("ry",10)
+        .style("opacity", 0.9);
+
+  var  tooltext = tooltip.append("text")
+                .attr("class", "tooltext")
+                .attr("x", 60)
+                .attr("dy", "1.2em")
+                .style("text-anchor", "middle")
+                .attr("font-size", "15px")
+                .attr("font-weight", "bold");
     // append the rectangle to capture mouse
   svg.append("rect")
+      .attr("class", "mouseContorl")
       .attr("width", width)
       .attr("height", height)
       .style("fill", "none")
       .style("pointer-events", "all")
-      .on("mouseover", function() { focus.style("display", null); })
-      .on("mouseout", function() { focus.style("display", "none"); })
-      .on("mousemove", mousemove);
+      .on("mouseover", function() { focus.style("display", null);
+                                    focusLine.style("display", null);
+                                    tooltip.style("display", null);})
+      .on("mouseout", function() { focus.style("display", "none");
+                                   focusLine.style("display", "none");
+                                   tooltip.style("display", "none");})
+      .on("mousemove", function(d) {
+         var x0 = x.invert(d3.mouse(this)[0]),
+              i = x0.getMonth()+1;
+              d0 = new Array();
+              d1 = new Array();
+              d = new Array();
+              sum=0;
 
-  function mousemove() {
-    var x0 = x.invert(d3.mouse(this)[0]),
-        i = bisectDate(data, x0, 1),
-        d0 = data[i - 1],
-        d1 = data[i],
-        d = x0 - d0.month > d1.month - x0 ? d1 : d0;
+              for(j=0;j<5;j++)
+              {
+                d0[j] = data[i - 1 + 12*j],
+                d1[j] = data[i+ 12*j],
+                d[j] = x0 - d0[j].month > d1[j].month - x0 ? d1[j] : d0[j];
+                sum=sum+d[j].value;
 
-    focus.select("circle.y")
-        .attr("transform",
-              "translate(" + x(d.month) + "," +
-                             y(d.value) + ")");
-        console.log(d.month)
-        console.log(d.value)
+                focus.select("circle.y"+j)
+                .attr("transform", "translate(" + x(d[j].month) + "," + y(sum) + ")");
 
-  }
-*/
+                focusLine.attr("transform", "translate(" + x(d[j].month) + "," + 0 + ")");
+
+                if(j===4)
+                {
+                  var texts=[year+1911+"/"+(d[j].month.getMonth()+1),"一卡通:"+d[0].value,"單程票:" + d[1].value,"一日卡:" + d[2].value,"團體票:" + d[3].value,"其他:" + d[4].value];
+                  tooltip.attr("transform", "translate(" +  (x(d[j].month)+50) + "," + d3.mouse(this)[1] + ")");
+                  tooltext.selectAll("tspan")
+                      .data(texts)
+                      .enter()
+                      .append("tspan")
+                      .attr("class", "tool")
+
+                  tooltext.selectAll(".tool")
+                      .data(texts)
+                      .attr("x",tooltext.attr("x"))
+                      .attr("dy","1.5em")
+                      .text(function(d,i){
+                          return d;
+                      });
+                }
+              }
+      });
 
     var legend = svg.selectAll(".legend")
       .data(z.domain().slice().reverse())
@@ -225,7 +281,7 @@ d3.csv("/data/"+year+".csv", function(error, data) {
       });
 });
 
-function updateData(year,ty) {
+function updateData(year) {
   d3.csv("/data/"+year+".csv", function(error, data) {
     if (error) throw error;
 
@@ -249,6 +305,7 @@ function updateData(year,ty) {
         .duration(1000)
         .attr("d", function(d) { return area(d.values); })
 
+
     svg.select(".x.axis") // change the x axis
         .transition()
         .duration(750)
@@ -258,5 +315,65 @@ function updateData(year,ty) {
         .duration(750)
         .call(yAxis);
 
-});
+    var focusLine =  svg.select(".fl")
+
+    var focus = svg.selectAll(".cirs")
+      .style("display", "none");
+
+    var tooltip = svg.select(".tooltip")
+                   .style("display", "none");
+    var  tooltext = tooltip.select(".tooltext")
+
+    svg.selectAll(".mouseContorl")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .on("mouseover", function() { focus.style("display", null);
+                                    focusLine.style("display", null);
+                                    tooltip.style("display", null);})
+      .on("mouseout", function() { focus.style("display", "none");
+                                   focusLine.style("display", "none");
+                                   tooltip.style("display", "none");})
+      .on("mousemove", function(d) {
+         var x0 = x.invert(d3.mouse(this)[0]),
+              i = x0.getMonth()+1;
+              d0 = new Array();
+              d1 = new Array();
+              d = new Array();
+              sum=0;
+
+              for(j=0;j<5;j++)
+              {
+                d0[j] = data[i - 1 + 12*j],
+                d1[j] = data[i+ 12*j],
+                d[j] = x0 - d0[j].month > d1[j].month - x0 ? d1[j] : d0[j];
+                sum=sum+d[j].value;
+
+                focus.select("circle.y"+j)
+                .attr("transform", "translate(" + x(d[j].month) + "," + y(sum) + ")");
+
+                focusLine.attr("transform", "translate(" + x(d[j].month) + "," + 0 + ")");
+
+                if(j===4)
+                {
+                  var texts=[year+1911+"/"+(d[j].month.getMonth()+1),"一卡通:"+d[0].value,"單程票:" + d[1].value,"一日卡:" + d[2].value,"團體票:" + d[3].value,"其他:" + d[4].value];
+                  tooltip.attr("transform", "translate(" +  (x(d[j].month)+50) + "," + d3.mouse(this)[1] + ")");
+                  tooltext.selectAll("tspan")
+                      .data(texts)
+                      .enter()
+                      .append("tspan")
+                      .attr("class", "tool")
+
+                  tooltext.selectAll(".tool")
+                      .data(texts)
+                      .attr("x",tooltext.attr("x"))
+                      .attr("dy","1.5em")
+                      .text(function(d,i){
+                          return d;
+                      });
+                }
+              }
+      });
+  });
 }

@@ -10,7 +10,6 @@ body {
 .axis line {
   fill: none;
   stroke: #000;
-  shape-rendering: crispEdges;
 }
 
 .grid .tick {
@@ -35,4 +34,13 @@ body {
 
 h1,p{
     margin:10px 0 0px 20px;
+}
+
+.toolrect{
+    stroke: lightgrey;
+    stroke-width:3;
+}
+
+.cirs{
+    stroke-width:1.5;
 }
