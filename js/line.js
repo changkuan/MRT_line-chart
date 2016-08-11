@@ -81,7 +81,7 @@ function make_y_axis() {
       .orient("left");
 }
 
-d3.csv("/data/"+year+".csv", function(error, data) {
+d3.csv("data/"+year+".csv", function(error, data) {
   if (error) throw error;
 
   data.forEach(function(d) {
@@ -90,6 +90,9 @@ d3.csv("/data/"+year+".csv", function(error, data) {
   });
 
   var layers = stack(nest.entries(data));
+  console.log(layers)
+
+
 
   x.domain(d3.extent(data, function(d) { return d.month; }));
   y.domain([0, yMaxValue]).nice();
@@ -110,7 +113,7 @@ d3.csv("/data/"+year+".csv", function(error, data) {
             .tickSize(-width, 0, 0)
             .tickFormat("")
         )
-/*
+
   svg.selectAll(".layer")
       .data(layers)
       .enter().append("path")
@@ -120,7 +123,7 @@ d3.csv("/data/"+year+".csv", function(error, data) {
       .style("stroke-opacity", 0.7)
       .style("stroke", function(d, i) { return z(i); })
       .style("fill", function(d, i) { return z(i); });
-*/
+/*
 
   var layer = svg.selectAll(".layer")
     .data(layers)
@@ -135,7 +138,7 @@ d3.csv("/data/"+year+".csv", function(error, data) {
       .style("stroke-opacity", 0.7)
       .style("stroke", function(d, i) { return z(i); })
       .style("fill", function(d, i) { return z(i); });
-
+*/
 
   svg.append("g")
       .attr("class", "x axis")
@@ -298,7 +301,7 @@ d3.csv("/data/"+year+".csv", function(error, data) {
 });
 
 function updateData(year) {
-  d3.csv("/data/"+year+".csv", function(error, data) {
+  d3.csv("data/"+year+".csv", function(error, data) {
     if (error) throw error;
 
     data.forEach(function(d) {
