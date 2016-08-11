@@ -129,8 +129,8 @@ d3.csv("/data/"+year+".csv", function(error, data) {
 
   layer.append("path")
       .attr("class", "area")
-      .style("fill", function(d,i) { return z(i); })
       .attr("d", function(d) { return area(d.values); })
+      .style("fill", function(d,i) { return z(i); })
       .style("fill-opacity", 0.5)
       .style("stroke-opacity", 0.7)
       .style("stroke", function(d, i) { return z(i); })
