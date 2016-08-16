@@ -22,18 +22,27 @@ body {
 }
 
 
-.left{
+#last{
     font-size:20px;
     margin:20px 0 20px 20px;
 }
 
-.right{
+#next{
     font-size:20px;
     margin:20px 0 20px 20px;
 }
 
-h1,p{
+h1{
+    font-size:30px;
     margin:10px 0 0px 20px;
+}
+
+#nRadius{
+  width:250px;
+}
+
+.note{
+  margin:10px 0 0px 20px;
 }
 
 .toolrect{

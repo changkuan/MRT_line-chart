@@ -9,10 +9,14 @@ var x = d3.time.scale()
 
 var y = d3.scale.linear()
       .rangeRound([height,0]);
-
+/*
 var z = d3.scale.category20b()
       .domain(["4","3","2","1","0"])
       .range(["#393b79","#5254a3","#6b6ecf","#9c9ede","#c6dbef"]);
+*/
+var z = d3.scale.category20b()
+      .domain(["4","3","2","1","0"])
+      .range(["#31a354","#fdae6b","#e6550d","#9ecae1","#3182bd"]);
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -57,6 +61,7 @@ var btn = d3.select('#next')
                   .on('click',function(){
                     if(year < 105)
                       year=year+1;
+                    document.getElementById("nRadius").value = year+1911;
                     updateData(year);
                   });
 
@@ -64,8 +69,14 @@ var btn = d3.select('#last')
                   .on('click',function(){
                     if(year > 97)
                       year=year-1;
+                    document.getElementById("nRadius").value = year+1911;
                     updateData(year);
                   });
+
+d3.select("#nRadius").on("input", function() {
+            year=+this.value-1911;
+            updateData(+this.value-1911);
+         });
 
 // function for the x grid lines
 function make_x_axis() {
@@ -90,9 +101,6 @@ d3.csv("data/"+year+".csv", function(error, data) {
   });
 
   var layers = stack(nest.entries(data));
-  console.log(layers)
-
-
 
   x.domain(d3.extent(data, function(d) { return d.month; }));
   y.domain([0, yMaxValue]).nice();
@@ -120,25 +128,9 @@ d3.csv("data/"+year+".csv", function(error, data) {
       .attr("class", "layer")
       .attr("d", function(d) { return area(d.values); })
       .style("fill-opacity", 0.5)
-      .style("stroke-opacity", 0.7)
-      .style("stroke", function(d, i) { return z(i); })
+      //.style("stroke-opacity", 0.7)
+      //.style("stroke", function(d, i) { return z(i); })
       .style("fill", function(d, i) { return z(i); });
-/*
-
-  var layer = svg.selectAll(".layer")
-    .data(layers)
-    .enter().append("g")
-      .attr("class", "layer");
-
-  layer.append("path")
-      .attr("class", "area")
-      .attr("d", function(d) { return area(d.values); })
-      .style("fill", function(d,i) { return z(i); })
-      .style("fill-opacity", 0.5)
-      .style("stroke-opacity", 0.7)
-      .style("stroke", function(d, i) { return z(i); })
-      .style("fill", function(d, i) { return z(i); });
-*/
 
   svg.append("g")
       .attr("class", "x axis")
@@ -154,7 +146,8 @@ d3.csv("data/"+year+".csv", function(error, data) {
   var focusLine =  svg.append("g")
       .attr("class", "fl")
   focusLine.append("line")
-      .style("stroke", "black")
+      .style("stroke", "grey")
+      .style("stroke-width", 1.5)
       .attr("x1", 0)
       .attr("y1", 0)
       .attr("x2", 0)
@@ -170,9 +163,10 @@ d3.csv("data/"+year+".csv", function(error, data) {
   {
      focus.append("circle")
       .attr("class", "y"+i)
-      .style("fill","none")
-      .style("stroke", z(3))
-      .attr("r", 4);
+      .style("fill",z(i))
+      .style("opacity", 0.85)
+      //.style("stroke", z(i))
+      .attr("r", 3.5);
   }
 
     //the data block
@@ -231,7 +225,7 @@ d3.csv("data/"+year+".csv", function(error, data) {
 
                 if(j===4)
                 {
-                  var texts=[year+1911+"/"+(d[j].month.getMonth()+1),"一卡通:"+d[0].value,"單程票:" + d[1].value,"一日卡:" + d[2].value,"團體票:" + d[3].value,"其他:" + d[4].value];
+                  var texts=[year+1911+"/"+(d[j].month.getMonth()+1),"票卡:"+d[0].value,"單程票:" + d[1].value,"一日卡:" + d[2].value,"團體票:" + d[3].value,"其他:" + d[4].value];
                   tooltip.attr("transform", "translate(" +  (x(d[j].month)+50) + "," + d3.mouse(this)[1] + ")");
                   tooltext.selectAll("tspan")
                       .data(texts)
@@ -281,7 +275,7 @@ d3.csv("data/"+year+".csv", function(error, data) {
         switch(d)
         {
           case "0":
-            return "一卡通"
+            return "票卡"
             break;
           case "1":
             return "單程票"
@@ -376,7 +370,7 @@ function updateData(year) {
 
                 if(j===4)
                 {
-                  var texts=[year+1911+"/"+(d[j].month.getMonth()+1),"一卡通:"+d[0].value,"單程票:" + d[1].value,"一日卡:" + d[2].value,"團體票:" + d[3].value,"其他:" + d[4].value];
+                  var texts=[year+1911+"/"+(d[j].month.getMonth()+1),"票卡:"+d[0].value,"單程票:" + d[1].value,"一日卡:" + d[2].value,"團體票:" + d[3].value,"其他:" + d[4].value];
                   tooltip.attr("transform", "translate(" +  (x(d[j].month)+50) + "," + d3.mouse(this)[1] + ")");
                   tooltext.selectAll("tspan")
                       .data(texts)

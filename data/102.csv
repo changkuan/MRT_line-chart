@@ -3,7 +3,7 @@ ticket,1,3450109
 ticket,2,3305369
 ticket,3,3544040
 ticket,4,3399723
-ticket,5,3934930
+ticket,5,3471062
 ticket,6,3391251
 ticket,7,3566171
 ticket,8,3630644
@@ -15,7 +15,7 @@ one_way,1,1298963
 one_way,2,1950937
 one_way,3,1273552
 one_way,4,1277987
-one_way,5,1688247
+one_way,5,1194015
 one_way,6,1421536
 one_way,7,1598684
 one_way,8,1732345
@@ -27,7 +27,7 @@ one_day,1,7622
 one_day,2,23088
 one_day,3,7008
 one_day,4,2734
-one_day,5,14207
+one_day,5,6118
 one_day,6,9029
 one_day,7,13862
 one_day,8,15854
@@ -39,7 +39,7 @@ group,1,28346
 group,2,35115
 group,3,18610
 group,4,19593
-group,5,19131
+group,5,15279
 group,6,16790
 group,7,32110
 group,8,33964
@@ -51,7 +51,7 @@ other,1,7606
 other,2,24805
 other,3,6128
 other,4,5709
-other,5,128335
+other,5,4315
 other,6,7956
 other,7,7785
 other,8,9113
