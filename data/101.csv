@@ -11,7 +11,6 @@ ticket,9,3249859
 ticket,10,3467772
 ticket,11,3391193
 ticket,12,3934930
-one_day,1,18280
 one_way,1,1859905
 one_way,2,1517673
 one_way,3,1151016
@@ -24,6 +23,7 @@ one_way,9,1286702
 one_way,10,1261837
 one_way,11,1173791
 one_way,12,1688247
+one_day,1,18280
 one_day,2,14243
 one_day,3,6993
 one_day,4,7858
