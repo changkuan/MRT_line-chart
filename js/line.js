@@ -74,6 +74,7 @@ var btn = d3.select('#last')
                     updateData(year);
                   });
 
+// time slider bar
 d3.select("#nRadius").on("input", function() {
             year=+this.value-1911;
             updateData(+this.value-1911);
@@ -162,7 +163,7 @@ d3.csv("data/"+year+".csv", function(error, data) {
       .attr("class", "cirs")
       .style("display", "none");
 
-    //five circles
+    //five focus circles
   for(i=0;i<5;i++)
   {
      focus.append("circle")
@@ -187,6 +188,7 @@ d3.csv("data/"+year+".csv", function(error, data) {
         .attr("ry",10)
         .style("opacity", 0.9);
 
+    //five circle in the tooltip
   for(k=0;k<5;k++)
   {
     tooltip.append("circle")
@@ -253,7 +255,7 @@ d3.csv("data/"+year+".csv", function(error, data) {
                   var header=[year+1911+"/"+(d[j].month.getMonth()+1),"票卡","單程票","一日卡","團體票","其他"]
                   var texts=[d[0].value, d[1].value,d[2].value,d[3].value,d[4].value];
                   tooltip.attr("transform", "translate(" +  (x(d[j].month)+50) + "," + d3.mouse(this)[1] + ")");
-                  tooltext.selectAll("tspan")
+                  tooltext.selectAll("tspan") //add header in mouse block
                       .data(header)
                       .enter()
                       .append("tspan")
@@ -271,7 +273,7 @@ d3.csv("data/"+year+".csv", function(error, data) {
                           return d;
                       });
 
-                  tooltext2.selectAll("tspan")
+                  tooltext2.selectAll("tspan") //add number in mouse block(right align)
                       .data(texts)
                       .enter()
                       .append("tspan")
