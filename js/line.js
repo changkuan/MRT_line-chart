@@ -1,6 +1,6 @@
 var format = d3.time.format("%m");
 
-var margin = {top: 20, right: 200, bottom: 30, left: 20},
+var margin = {top: 25, right: 200, bottom: 30, left: 20},
     width = 680 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -28,6 +28,7 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("right")
+    .tickFormat(d3.format(".2s"));
 
 var stack = d3.layout.stack()
     .offset("zero")
@@ -114,6 +115,11 @@ d3.csv("data/"+year+".csv", function(error, data) {
             .tickFormat("")
         )
 
+  svg.append("text")
+        .attr("transform", "translate("+ width +",-20)")
+        .attr("dy", ".71em")
+        .text("流量 (次)");
+
     // Draw the y Grid lines
   svg.append("g")
         .attr("class", "grid")
@@ -128,8 +134,6 @@ d3.csv("data/"+year+".csv", function(error, data) {
       .attr("class", "layer")
       .attr("d", function(d) { return area(d.values); })
       .style("fill-opacity", 0.5)
-      //.style("stroke-opacity", 0.7)
-      //.style("stroke", function(d, i) { return z(i); })
       .style("fill", function(d, i) { return z(i); });
 
   svg.append("g")
@@ -176,20 +180,41 @@ d3.csv("data/"+year+".csv", function(error, data) {
 
   tooltip.append("rect")
         .attr("class", "toolrect")
-        .attr("width", 124)
+        .attr("width", 144)
         .attr("height",144)
         .attr("fill", "white")
         .attr("rx",10)
         .attr("ry",10)
         .style("opacity", 0.9);
 
+  for(k=0;k<5;k++)
+  {
+    tooltip.append("circle")
+        .attr("transform", function() { return "translate(5,"  + k * 22 + ")"; })
+        .attr("cy", 42)
+        .attr("cx", 5)
+        .attr("r", 4.5)
+        .style("fill-opacity", 0.5)
+        .style("fill", z(k))
+  }
+
+    //the name of the data
   var  tooltext = tooltip.append("text")
                 .attr("class", "tooltext")
-                .attr("x", 60)
+                .attr("x", 25)
                 .attr("dy", "1.2em")
-                .style("text-anchor", "middle")
                 .attr("font-size", "15px")
                 .attr("font-weight", "bold");
+
+    //data number
+  var  tooltext2 = tooltip.append("text")
+                .attr("class", "tooltext2")
+                .attr("x", 140)
+                .attr("y",22)
+                .attr("dy", "1.2em")
+                .attr("font-size", "15px")
+                .attr("font-weight", "bold");
+
     // append the rectangle to capture mouse
   svg.append("rect")
       .attr("class", "mouseContorl")
@@ -225,21 +250,42 @@ d3.csv("data/"+year+".csv", function(error, data) {
 
                 if(j===4)
                 {
-                  var texts=[year+1911+"/"+(d[j].month.getMonth()+1),"票卡:"+d[0].value,"單程票:" + d[1].value,"一日卡:" + d[2].value,"團體票:" + d[3].value,"其他:" + d[4].value];
+                  var header=[year+1911+"/"+(d[j].month.getMonth()+1),"票卡","單程票","一日卡","團體票","其他"]
+                  var texts=[d[0].value, d[1].value,d[2].value,d[3].value,d[4].value];
                   tooltip.attr("transform", "translate(" +  (x(d[j].month)+50) + "," + d3.mouse(this)[1] + ")");
                   tooltext.selectAll("tspan")
-                      .data(texts)
+                      .data(header)
                       .enter()
                       .append("tspan")
                       .attr("class", "tool")
 
                   tooltext.selectAll(".tool")
-                      .data(texts)
-                      .attr("x",tooltext.attr("x"))
+                      .data(header)
+                      .attr("x",function(d,i){
+                        if(i===0)
+                          return 48;
+                        else
+                          return tooltext.attr("x");})
                       .attr("dy","1.5em")
                       .text(function(d,i){
                           return d;
                       });
+
+                  tooltext2.selectAll("tspan")
+                      .data(texts)
+                      .enter()
+                      .append("tspan")
+                      .attr("class", "tool2")
+
+                  tooltext2.selectAll(".tool2")
+                      .data(texts)
+                      .attr("x",function(d,i){ return tooltext2.attr("x");})
+                      .attr("dy","1.5em")
+                      .style("text-anchor","end")
+                      .text(function(d,i){
+                          return d;
+                      });
+
                 }
               }
       });
@@ -257,7 +303,7 @@ d3.csv("data/"+year+".csv", function(error, data) {
   legendClassArray = legendClassArray.reverse();
 
   legend.append("rect")
-      .attr("x", width + 80)
+      .attr("x", width + 65)
       .attr("width", 18)
       .attr("height", 18)
       .style("fill-opacity", 0.5)
@@ -267,28 +313,22 @@ d3.csv("data/"+year+".csv", function(error, data) {
       })
 
   legend.append("text")
-      .attr("x", width + 101)
+      .attr("x", width + 86)
       .attr("y", 9)
       .attr("dy", ".35em")
       .text(function(d) {
-        //console.log(d);
         switch(d)
         {
           case "0":
             return "票卡"
-            break;
           case "1":
             return "單程票"
-            break;
           case "2":
             return "一日卡"
-            break;
           case "3":
             return "團體票"
-            break;
           case "4":
             return "其他"
-            break;
           default:
         }
       });
@@ -318,7 +358,6 @@ function updateData(year) {
         .duration(1000)
         .attr("d", function(d) { return area(d.values); })
 
-
     svg.select(".x.axis") // change the x axis
         .transition()
         .duration(750)
@@ -336,6 +375,7 @@ function updateData(year) {
     var tooltip = svg.select(".tooltip")
                    .style("display", "none");
     var  tooltext = tooltip.select(".tooltext")
+    var  tooltext2 = tooltip.select(".tooltext2")
 
     svg.selectAll(".mouseContorl")
       .attr("width", width)
@@ -370,18 +410,38 @@ function updateData(year) {
 
                 if(j===4)
                 {
-                  var texts=[year+1911+"/"+(d[j].month.getMonth()+1),"票卡:"+d[0].value,"單程票:" + d[1].value,"一日卡:" + d[2].value,"團體票:" + d[3].value,"其他:" + d[4].value];
+                   var header=[year+1911+"/"+(d[j].month.getMonth()+1),"票卡","單程票","一日卡","團體票","其他"]
+                  var texts=[d[0].value, d[1].value,d[2].value,d[3].value,d[4].value];
                   tooltip.attr("transform", "translate(" +  (x(d[j].month)+50) + "," + d3.mouse(this)[1] + ")");
-                  tooltext.selectAll("tspan")
-                      .data(texts)
+                   tooltext.selectAll("tspan")
+                      .data(header)
                       .enter()
                       .append("tspan")
                       .attr("class", "tool")
 
                   tooltext.selectAll(".tool")
-                      .data(texts)
-                      .attr("x",tooltext.attr("x"))
+                      .data(header)
+                      .attr("x",function(d,i){
+                        if(i===0)
+                          return 48;
+                        else
+                          return tooltext.attr("x");})
                       .attr("dy","1.5em")
+                      .text(function(d,i){
+                          return d;
+                      });
+
+                  tooltext2.selectAll("tspan")
+                      .data(texts)
+                      .enter()
+                      .append("tspan")
+                      .attr("class", "tool2")
+
+                  tooltext2.selectAll(".tool2")
+                      .data(texts)
+                      .attr("x",function(d,i){ return tooltext2.attr("x");})
+                      .attr("dy","1.5em")
+                      .style("text-anchor","end")
                       .text(function(d,i){
                           return d;
                       });
